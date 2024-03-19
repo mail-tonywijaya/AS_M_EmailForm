@@ -26,6 +26,5 @@
         android:layout_gravity="right"
         android:text="Kirim"
         android:drawableLeft="@android:drawable/ic_dialog_email"
-        android:id="@+id/kirimButton">
-    </Button>
+        android:id="@+id/kirimButton" />
 </LinearLayout>
