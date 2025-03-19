@@ -3,6 +3,7 @@ package com.tonywijaya.emailform;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
@@ -29,53 +30,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        askPermission = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (!isGranted) {
-                        Toast.makeText(getApplicationContext(), "Aplikasi membutuhkan permission notificiation!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
-
-        initKirimButton();
-
-        askNotificationPermission();
-    }
-
-    private void initKirimButton() {
-        _kirimButton = findViewById(R.id.kirimButton);
-        _penerimaEditText = findViewById(R.id.penerimaEditText);
-        _subjekEditText = findViewById(R.id.subjekEditText);
-        _pesanEditText = findViewById(R.id.pesanEditText);
-
-        _kirimButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NotificationChannel channel = new NotificationChannel("twChannel", "TW", NotificationManager.IMPORTANCE_DEFAULT);
-
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(_subjekEditText.getText())
-                        .setContentText(_penerimaEditText.getText() + " : " + _pesanEditText.getText())
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                        .setChannelId(channel.getId());
-
-                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                manager.createNotificationChannel(channel);
-                manager.notify(1, builder.build());
-            }
-        });
-    }
-
-    private void askNotificationPermission() {
-        Log.d("*tw*", "Android version: " + Build.VERSION.SDK_INT);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Log.d("*tw*", "Terpenuhi");
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        1);
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                askPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
             }
         }
     }
