@@ -1,7 +1,5 @@
 package com.tonywijaya.emailform;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -13,17 +11,13 @@ import android.app.NotificationManager;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private Button _kirimButton;
-    private EditText _penerimaEditText, _subjekEditText, _pesanEditText;
-
-    private ActivityResultLauncher<String> askPermission;
+    private EditText _penerimaEditText, _pesanEditText, _subjekEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,5 +33,30 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
+
+        _penerimaEditText = findViewById(R.id.penerimaEditText);
+        _pesanEditText = findViewById(R.id.pesanEditText);
+        _subjekEditText = findViewById(R.id.subjekEditText);
+
+        _kirimButton = findViewById(R.id.kirimButton);
+
+        _kirimButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotificationChannel channel = new NotificationChannel("twChannel", "TW",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(_subjekEditText.getText())
+                        .setContentText(_penerimaEditText.getText() + " : " + _pesanEditText.getText())
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setChannelId(channel.getId());
+
+                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                manager.createNotificationChannel(channel);
+                manager.notify(1, builder.build());
+            }
+        });
     }
 }
